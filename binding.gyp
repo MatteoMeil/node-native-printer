@@ -1,8 +1,8 @@
 {
   "targets": [
     {
-      "target_name": "posix_print",
-      "sources": ["./lib/methods.cpp", "./lib/API.cpp"],
+      "target_name": "unix_printer",
+      "sources": ["./lib/unix/methods.cpp", "./lib/unix/API.cpp"],
       'cflags': ['-fexceptions'],
       'cflags_cc': ['-fexceptions'],
       "conditions": [

@@ -1,0 +1,31 @@
+{
+  "name": "node-native-printer",
+  "version": "1.0.0-alpha.0",
+  "description": "Node module to print from nodejs apps",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"no test specified\" && exit 1",
+    "install": "node install/install.js && node-gyp rebuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MatteoMeil/node-native-print.git"
+  },
+  "keywords": [
+    "node",
+    "native",
+    "printer",
+    "print"
+  ],
+  "author": "MatteoMeil",
+  "license": "MIT",
+  "gypfile": true,
+  "bugs": {
+    "url": "https://github.com/MatteoMeil/node-native-print/issues"
+  },
+  "homepage": "https://github.com/MatteoMeil/node-native-print#readme",
+  "dependencies": {}
+}
