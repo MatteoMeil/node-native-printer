@@ -65,12 +65,12 @@ Then you can set a printer to work on, calling `setPrinter(printerName)`. In thi
 
       ```json 
       {
-         "Collate": "array containing collation options",
-         "Duplexing": "array containing collation options",
-         "MaxCopy": "max number of copies you can send to printer",
-         "SupportsColor": "boolean indicating whether a print can print with colors",
-         "PaperSheets": "available paper formats supported from printer. If custom is present it can be submitted custom width and height",
-         "Resolutions": "printer resolutions (i.e.: High, Medium)"
+          "Collate": "array containing collation options",
+          "Duplexing": "array containing collation options",
+          "MaxCopy": "max number of copies you can send to printer",
+          "SupportsColor": "boolean indicating whether a print can print with colors",
+          "PaperSheets": "available paper formats supported from printer. If custom is present it can be submitted custom width and height",
+          "Resolutions": "printer resolutions (i.e.: High, Medium)"
       }
       ```
 
@@ -82,29 +82,29 @@ Then you can set a printer to work on, calling `setPrinter(printerName)`. In thi
       * **Windows**: default options:
          ```json
          {
-         "collate": true,
-         "color": true,
-         "copies": 1,
-         "duplex": "Default",
-         "landscape": false,
-         "paperSize": "",
-         "fromPage": 0,
-         "toPage": 0
+             "collate": true,
+             "color": true,
+             "copies": 1,
+             "duplex": "Default",
+             "landscape": false,
+             "paperSize": "",
+             "fromPage": 0,
+             "toPage": 0
          }
          ```
          **Notes:** duplex is case sensitive, so be careful to write correctly. `"paperSize"` refers to size of sheet to print on; if you want to print on a paper with custom dimensions, pass `"Custom.WidthxHeight"` where Width and Height are dimensions in hundredths of an inch. `"fromPage": 0` means document will be printed from first page; `"toPage": 0` means document will be printed from `"fromPage"` to last page.
 
       * **Unix**: you can use [command-line options](https://www.cups.org/doc/options.html) in JSON-style and/or printer-specific options retrieved from `printerOptions()`; i.e.:
 
-      
-            {
-               "landscape": true,
-               "n": 2,
-               "sides": "two-sided-long-edge"
-            }
-      
+         ```json      
+         {
+             "landscape": true,
+             "n": 2,
+             "sides": "two-sided-long-edge"
+         }
+         ```
 
          For options that doesn't have a value (like `landscape` or `fit-to-page`) you can assign a boolean (see above)
 
-         It will be generated and executed a command like `lp -d printerName -o landscape -n 2 -o sides=two-sided-long-edge`
-   * **Returning value (only for Unix)**: job id of work sentto printer
+         It will be generated and executed a command like `lp -d printerName /path/to/filename -o landscape -n 2 -o sides=two-sided-long-edge`
+   * **Returning value (only for Unix)**: job id of work sent to printer
