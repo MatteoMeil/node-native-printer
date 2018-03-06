@@ -60,12 +60,18 @@ module.exports = class UnixPrinter{
 
 		let keys = Object.keys(options);
 		keys.forEach(key => {
-			if(noValueOptions.includes(key)){
-				if(options[key])
-					optionString += '-o ' + key + ' ';
+			if(key == 'n')
+				optionString += '-n ' + options[key] + ' ';
+			else if (key == '#')
+				optionString += '-#' + options[key] + ' ';				
+			else{
+				if(noValueOptions.includes(key)){
+					if(options[key])
+						optionString += '-o ' + key + ' ';
+				}
+				else
+					optionString += '-o ' + key + '=' + options[key] + ' ';
 			}
-			else
-				optionString += '-o ' + key + '=' + options[key] + ' ';
 		})
 
 		return unixPrinter.print(printer, filename, optionString);
