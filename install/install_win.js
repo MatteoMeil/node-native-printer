@@ -1,16 +1,24 @@
-const { spawnSync } = require('child_process');
+const fs = require('fs');
 
 module.exports = function(){
 
-	var cmd, output;
-	var electron = process.argv.includes('--electron');
-	
-	cmd = spawnSync(`npm list ${electron ? 'electron-' : ''}edge`);
+	console.log(__dirname);
+	if(fs.existsSync(__dirname + "/../../electron-edge"))
+		makeEnv(true);
+	else{
+		console.warn("\nelectron-edge not found. Trying to find edge.js\n")
 
-	output = cmd.stdout.toString('utf-8');
-
-	if(output.includes('empty')){
-		console.error(`${electron ? 'electron-' : ''}edge is required but not found`);
-		process.exit(1);
+		if(fs.existsSync(__dirname + "/../edge"))
+			makeEnv(false);
+		
+		else{
+			console.error("edge not found\n\nInstallation aborted.\n");
+			process.exit(1);
+		}
 	}
+
+}
+
+function makeEnv(electron){
+	fs.writeFileSync(fs.realpathSync(__dirname + '\\..') + "\\.env", electron ? "ELECTRON=true" : "ELECTRON=false");
 }

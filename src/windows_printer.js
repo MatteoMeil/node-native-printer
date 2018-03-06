@@ -1,10 +1,11 @@
-const edge;
-if(process.argv.includes('--electron'))
-	edge = require('../../electron-edge');
-else
-	edge = require('../../edge');
+const dotenv = require('dotenv');
+const fs = require('fs');
 
+dotenv.config({path: fs.realpathSync(__dirname + '/../.env')});
+
+const edge = require(`../../${process.env.ELECTRON ? 'electron-' : ''}edge`);
 const dllPath = '../lib/windows/windows_printer.dll';
+
 module.exports = class WinPrinter{
 	constructor(){
 		this.printer = '';

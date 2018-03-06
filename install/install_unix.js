@@ -18,11 +18,19 @@ module.exports = function(){
 
 	output = cmd.stdout.toString('utf-8');
 
-	if(output.includes('libcups2-dev')){
+	cmd = spawnSync('npm', ['run', 'build']);
+
+	if(output = cmd.stderr.toString('utf-8')){
+		console.error("Error: \n" + output);
+	}
+
+	console.log(cmd.stdout.toString('utf-8'));
+
+	/* if(output.includes('libcups2-dev')){
 		console.log('libcups2-dev found!');
 	}
 	else{
 		console.error('libcups2-dev is required but was not found');
 		process.exit(1);
-	}
+	} */
 }
