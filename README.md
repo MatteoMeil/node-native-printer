@@ -91,7 +91,7 @@ Then you can set a printer to work on, calling `setPrinter(printerName)`. In thi
          }
          ```
 
-         List of supported extensions can be found [here]()
+         List of supported extensions can be found [here](https://github.com/MatteoMeil/node-native-printer/blob/master/supported-extensions.md)
 
          **Notes:** duplex is case sensitive, so be careful to write correctly. `"paperSize"` refers to size of sheet to print on; if you want to print on a paper with custom dimensions, pass `"Custom.WidthxHeight"` where Width and Height are dimensions in hundredths of an inch. `"fromPage": 0` means document will be printed from first page; `"toPage": 0` means document will be printed from `"fromPage"` to last page.
 
