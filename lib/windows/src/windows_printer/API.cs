@@ -21,7 +21,7 @@ namespace windows_printer
         {
             return Methods.GetOptions((string)(printerName));
         }
-        public async Task<object> PrintPDF(dynamic input)
+        public async Task<object> Print(dynamic input)
         {
             Settings settings = new Settings
             {
@@ -38,7 +38,7 @@ namespace windows_printer
             String filePath = (String)input.filePath;
             short copies = (short)input.copies;
 
-            return Methods.PrintPDF(printerName, settings, filePath, copies);
+            return Methods.Print(printerName, settings, filePath, copies);
         }
     }
 }

@@ -6,18 +6,16 @@ A node module to natively print your files
 
 * ### Windows:
 
-   * **edge** or electron-edge (depending on your environment). Both of them need to be **installed before** this module. During installation it will be detected which one is installed
+   * **[edge](https://github.com/tjanczuk/edge)** or [electron-edge](https://github.com/kexplo/electron-edge) (depending on your environment). Both of them need to be **installed before** this module. During installation it will be detected which one is installed
 
 * ### Unix (Mac and Linux)
 
-   * **node-gyp** to build native modules
-   * **cups** - for Linux it needs libcups2-dev and libcups2; for Mac it needs cups-devel. Both packages contains source code needed to build native modules. **It may also need this lib in production**. See [API](#api)
+   * **[node-gyp](https://github.com/nodejs/node-gyp)** to build native modules
+   * **[cups](https://www.cups.org/)** - for Linux it needs libcups2-dev and libcups2; for Mac it needs cups-devel. Both packages contains source code needed to build native modules. **It may also need this lib in production**. See [API](#api)
 
 ## Imporant notes
 
 Due to important differences in enviroments and ecosystems between Microsoft and Unix-based systems, this module has been written in C++ for Unix and C# for Windows. This can result in different behaviours during the execution of the methods (as different execution time).
-
-In addition, some features are only available for Unix-Based systems and will be implemented soon in Windows.
 
 ***
 ## Installation
@@ -92,6 +90,9 @@ Then you can set a printer to work on, calling `setPrinter(printerName)`. In thi
              "toPage": 0
          }
          ```
+
+         List of supported extensions can be found [here]()
+
          **Notes:** duplex is case sensitive, so be careful to write correctly. `"paperSize"` refers to size of sheet to print on; if you want to print on a paper with custom dimensions, pass `"Custom.WidthxHeight"` where Width and Height are dimensions in hundredths of an inch. `"fromPage": 0` means document will be printed from first page; `"toPage": 0` means document will be printed from `"fromPage"` to last page.
 
       * **Unix**: you can use [command-line options](https://www.cups.org/doc/options.html) in JSON-style and/or printer-specific options retrieved from `printerOptions()`; i.e.:
@@ -108,3 +109,7 @@ Then you can set a printer to work on, calling `setPrinter(printerName)`. In thi
 
          It will be generated and executed a command like `lp -d printerName /path/to/filename -o landscape -n 2 -o sides=two-sided-long-edge`
    * **Returning value (only for Unix)**: job id of work sent to printer
+
+### `printText(text[, options, printer])`
+
+Same as `print()` but you can pass directly a string of text on the first parameter.

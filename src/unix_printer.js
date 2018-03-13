@@ -1,5 +1,6 @@
 const unixPrinter = require('../build/Release/unix_printer');
 const fs = require('fs');
+const os = require('os');
 
 module.exports = class UnixPrinter{
 	constructor(){
@@ -75,6 +76,14 @@ module.exports = class UnixPrinter{
 		})
 
 		return unixPrinter.print(printer, filename, optionString);
+	}
+
+	printText(text = '', options = {}, printer = ''){
+		let filepath = os.tmpdir() + "/nnp_tmp.txt";
+		
+		fs.writeFileSync(filepath, text);
+
+		this.print(filepath, options, printer);
 	}
 }
 

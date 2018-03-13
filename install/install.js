@@ -5,7 +5,7 @@ var platform = process.platform;
 
 process.on('exit', code => {
 	if(code == 1)
-		console.log("Installation aborted.");
+		console.log("Installation aborted.\n\n");
 })
 
 if(platform == 'win32'){
