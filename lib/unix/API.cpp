@@ -36,35 +36,38 @@ namespace API{
 		cups_dest_t* dest = getPrinter(*printer);
 
 		if(dest == NULL)
-			THROW_EXCEPTION("Printer not found");
+			THROW_EXCEPTION("Printer not found or error retrieving printer");
 		
-		cups_option_t* options = dest->options;
-		printer_job* printerJob = getJobs(dest);
+		cups_job_t* printerJobs;
+		int num_jobs = cupsGetJobs(&printerJobs, dest->name, 0, CUPS_WHICHJOBS_ALL);
 
 		Local<Object> result = Object::New(isolate);
-		
-		// Local<Object> infos = Object::New(isolate);
 		Local<Object> jobs = Array::New(isolate);
 		Local<Object> CUPSOptions = Object::New(isolate);
 
 		for(int i = 0; i < dest->num_options; i++){
-			CUPSOptions->Set(UTF8_STRING(options[i].name), UTF8_STRING(options[i].value));
+			CUPSOptions->Set(UTF8_STRING(dest->options[i].name), UTF8_STRING(dest->options[i].value));
 		}
 
-		for(int i = 0; i < printerJob->num_jobs; i++){
+		for(int i = 0; i < num_jobs; i++){
 			Local<Object> job = Object::New(isolate);
-			job_info* info = printerJob[i].info;
-
-			for(int j = 0; j < printerJob->num_info; j++){
-				job->Set(UTF8_STRING(info[j].key), UTF8_STRING(info[j].value));
-			}
+			
+			job->Set(UTF8_STRING("completed_time"), UTF8_STRING(httpGetDateString(printerJobs[i].completed_time)));
+			job->Set(UTF8_STRING("creation_time"), UTF8_STRING(httpGetDateString(printerJobs[i].creation_time)));
+			job->Set(UTF8_STRING("format"), UTF8_STRING(printerJobs[i].format));
+			job->Set(UTF8_STRING("id"), UTF8_STRING(to_string(printerJobs[i].id).c_str()));
+			job->Set(UTF8_STRING("priority"), UTF8_STRING(to_string(printerJobs[i].priority).c_str()));
+			job->Set(UTF8_STRING("processing_time"), UTF8_STRING(httpGetDateString(printerJobs[i].processing_time)));
+			job->Set(UTF8_STRING("size"), UTF8_STRING(to_string(printerJobs[i].size).c_str()));
+			job->Set(UTF8_STRING("status"), UTF8_STRING((job_statuses.at(printerJobs[i].state)).c_str()));
+			job->Set(UTF8_STRING("title"), UTF8_STRING(printerJobs[i].title));
+			job->Set(UTF8_STRING("user"), UTF8_STRING(printerJobs[i].user));
 
 			jobs->Set(i, job);
 		}
 
-		for (int i = 0; i < dest->num_options; i++){
-			CUPSOptions->Set(UTF8_STRING(options[i].name), UTF8_STRING(options[i].value));
-		}
+		cupsFreeJobs(num_jobs, printerJobs);
+		cupsFreeDests(1, dest);
 		
 		// result->Set(UTF8_STRING("infos"), infos);
 		result->Set(UTF8_STRING("jobs"), jobs);
@@ -121,6 +124,9 @@ namespace API{
 
 			group++;
 		}
+
+		cupsFreeDests(1, dest);
+		ppdClose(ppd);
 		
 		result->Set(UTF8_STRING("options"), resOptions);
 		result->Set(UTF8_STRING("defaultOptions"), resDefaults);

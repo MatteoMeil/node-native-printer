@@ -4,63 +4,75 @@ using namespace std;
 
 namespace methods{
 
-	unordered_map<ipp_jstate_t, string> job_statuses = {
-		{IPP_JOB_ABORTED, "aborted"},
-		{IPP_JOB_CANCELED, "canceled"},
-		{IPP_JOB_COMPLETED, "completed"},
-		{IPP_JOB_HELD, "held"},
-		{IPP_JOB_PENDING, "pending"},
-		{IPP_JOB_PROCESSING, "processing"},
-		{IPP_JOB_STOPPED, "stopped"}
-	};
-	
 	cups_dest_t* getPrinter(const char* printer){
 		cups_dest_t* dests;
 		int num_dests = cupsGetDests(&dests);
 
-		cups_dest_t* result;
+		cups_dest_t* temp;
 		
 		if(printer != NULL){
 			string printerName = strtolower(string(printer)); 
 			
 			if(strlen(printer) > 0 && printerName.compare("null") != 0 && printerName.compare("undefined") != 0)
-				result = cupsGetDest(printer, NULL, num_dests, dests);	
+				temp = cupsGetDest(printer, NULL, num_dests, dests);	
 			else
-				result = cupsGetDest(cupsGetDefault(), NULL, num_dests, dests);
+				temp = cupsGetDest(cupsGetDefault(), NULL, num_dests, dests);
 		}
 		else
-			result = cupsGetDest(cupsGetDefault(), NULL, num_dests, dests);			
+			temp = cupsGetDest(cupsGetDefault(), NULL, num_dests, dests);			
+
+		cups_dest_t* result = new cups_dest_t;
+
+		if(! copyDest(temp, result))
+			return NULL;
+
+		cupsFreeDests(num_dests, dests);
+		dests = temp = NULL;
 
 		return result;
 	}
 
-	printer_job* getJobs(cups_dest_t* dest){
-		cups_job_t* jobs;
-		int totalJobs = cupsGetJobs(&jobs, dest->name, 0, CUPS_WHICHJOBS_ACTIVE);
+	bool copyDest(cups_dest_t* source, cups_dest_t* dest){
+		if(source->instance != NULL){
+			dest->instance = strdup(source->instance);
 
-		printer_job* resultJob = new printer_job[totalJobs];
-
-		resultJob->num_jobs = totalJobs;
-
-		for(int i = 0; i < totalJobs; i++){
-			
-			job_info* info = new job_info[10];
-
-			info[0] = {"completed_time", httpGetDateString(jobs->completed_time)};
-			info[1] = {"creation_time", httpGetDateString(jobs->creation_time)};
-			info[2] = {"format", jobs->format};
-			info[3] = {"id", to_string(jobs->id).c_str()};
-			info[4] = {"priority", to_string(jobs->priority).c_str()};
-			info[5] = {"processing_time", httpGetDateString(jobs->processing_time)};
-			info[6] = {"size", to_string(jobs->size).c_str()};
-			info[7] = {"status", (job_statuses.at(jobs->state)).c_str()};
-			info[8] = {"title", jobs->title};
-			info[9] = {"user", jobs->user};
-
-			resultJob[i].info = info;
+			if(dest->instance == NULL)
+				return false;
 		}
 
-		return resultJob;
+		if(source->name != NULL){
+			dest->name = strdup(source->name);
+
+			if(dest->name == NULL)
+				return false;
+		}
+		
+		dest->is_default = source->is_default;
+		dest->num_options = source->num_options;
+
+		dest->options = new cups_option_t[source->num_options];
+		
+		if(! copyOptions(source->options, source->num_options, dest->options)){
+			cerr << "Errore durante la copia delle opzioni\n";
+			return 1;
+		}
+
+		return true;
+	}
+
+	bool copyOptions(cups_option_t* source, int num, cups_option_t* dest){
+
+		for(int i = 0; i < num; i++){
+			dest[i].name = strdup(source[i].name);
+			dest[i].value = strdup(source[i].value);
+			
+			if(dest[i].name == NULL)
+				return false;
+			if(dest[i].value == NULL)
+				return false;
+		}
+		
+		return true;
 	}
 
 	string exec(const char* cmd) {

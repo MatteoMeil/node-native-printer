@@ -3,8 +3,8 @@ const fs = require('fs');
 
 dotenv.config({path: fs.realpathSync(__dirname + '/../.env')});
 
-const edge = require(`../../${process.env.ELECTRON ? 'electron-' : ''}edge`);
-const dllPath = '../lib/windows/windows_printer.dll';
+const edge = require(`../../${process.env.ELECTRON == 'true' ? 'electron-' : ''}edge`);
+const dllPath = fs.realpathSync(__dirname + '/../lib/windows/windows_printer.dll');
 
 module.exports = class WinPrinter{
 	constructor(){
@@ -18,7 +18,14 @@ module.exports = class WinPrinter{
 			methodName: 'ListPrinters' // This must be Func<object,Task<object>>
 		});
 
-		return list('', true);
+		return new Promise((resolve, reject) => {
+			list('', function(error, response){
+				if(error)
+					reject(error);
+				else
+					resolve(response);
+			});
+		})
 	}
 
 	defaultPrinterName() {
@@ -28,7 +35,14 @@ module.exports = class WinPrinter{
 			methodName: 'DefaultPrinterName' // This must be Func<object,Task<object>>
 		});
 
-		return defaultName('', true);
+		return new Promise((resolve, reject) => {
+			defaultName('', function(error, response){
+				if(error)
+					reject(error);
+				else
+					resolve(response);
+			})
+		});
 	}
 
 	setPrinter(printer){
@@ -46,7 +60,14 @@ module.exports = class WinPrinter{
 			methodName: 'PrinterInfo' // This must be Func<object,Task<object>>
 		});
 
-		return infos(printer ? printer : this.printer, true);
+		return new Promise((resolve, reject) => {
+			infos(printer || this.printer, function(error, response){
+				if(error)
+					reject(error);
+				else
+					resolve(response);
+			})
+		});
 	}
 	
 	printerOptions(printer = ''){
@@ -56,7 +77,14 @@ module.exports = class WinPrinter{
 			methodName: 'GetOptions' // This must be Func<object,Task<object>>
 		});
 
-		return getOptions(printer ? printer : this.printer, true);
+		return new Promise((resolve, reject) => {
+			getOptions(printer || this.printer, function(error, response){
+				if(error)
+					reject(error);
+				else
+					resolve(response);
+			})
+		});
 	}
 
 	print(filename = null, userOptions = {}, printer = ''){
@@ -70,12 +98,15 @@ module.exports = class WinPrinter{
 			paperSize : '',
 			printerName: printer || this.printer,
 			copies: 1,
-			filePath: fileName
+			filePath: filename
 		}
 
 		let options = {};
 		Object.keys(defaultOptions).forEach(value => {
-			options[value] = userOptions[value] || defaultOptions[value];
+			if(userOptions[value] != null || userOptions[value] != undefined)
+				options[value] = userOptions[value] 
+			else 
+				options[value] = defaultOptions[value];
 		});
 
 		var printPDF = edge.func({
@@ -87,7 +118,14 @@ module.exports = class WinPrinter{
 		if(!filename)
 			throw "File path not specified";
 
-		return printPDF(options, true);
+		return new Promise((resolve, reject) => {
+			printPDF(options, function(error, response){
+				if(error)
+					reject(error);
+				else
+					resolve(response);
+			});
+		})
 	}
 
 }

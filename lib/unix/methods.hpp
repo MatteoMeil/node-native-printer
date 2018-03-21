@@ -6,32 +6,13 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <cstring>
 #include <stdexcept>
 #include <stdio.h>
 
 using namespace std;
 
 namespace methods{
-	//structures
-
-	/**
-	 * Defines a general info for the job.
-	 * I.e. the status of the job will be represented with job_info status = {"status", "waiting"})
-	 */
-	typedef struct job_info{
-		const char* key;
-		const char* value;
-	} job_info;
-
-	/**
-	 * Collects all job_infos
-	 */
-	typedef struct printer_job{
-		job_info* info;
-		int num_info = 10;
-		int num_jobs;
-	} printer_job;
-
 	//methods
 
 	/**
@@ -41,11 +22,21 @@ namespace methods{
 	cups_dest_t* getPrinter(const char*);
 
 	/**
-	 * Return a pointer to the list of all printer_job.
-	 * @param dest printer from which take the jobs
-	 * @return pointer to printer_job list
+	 * Copies a destination from src to dest
+	 * @param src cups_dest_t* from which to copy informations
+	 * @param dest cups_dest_t* in which to copy informations
+	 * @return copy of src
 	 */
-	printer_job* getJobs(cups_dest_t*);
+	bool copyDest(cups_dest_t*, cups_dest_t*);
+
+	/**
+	 * Copies options from src to dest
+	 * @param src cups_option_t* from which to copy informations
+	 * @param num_options number of options to copy starting from the first
+	 * @param dest cups_option_t* in which to copy informations
+	 * @return copy of src 
+	 */
+	bool copyOptions(cups_option_t*, int, cups_option_t*);
 
 	/**
 	 * Alias of system() that return output string

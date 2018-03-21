@@ -12,6 +12,17 @@ using namespace v8;
 
 //Method declarations
 namespace API{
+	
+	unordered_map<ipp_jstate_t, string> job_statuses = {
+		{IPP_JOB_ABORTED, "aborted"},
+		{IPP_JOB_CANCELED, "canceled"},
+		{IPP_JOB_COMPLETED, "completed"},
+		{IPP_JOB_HELD, "held"},
+		{IPP_JOB_PENDING, "pending"},
+		{IPP_JOB_PROCESSING, "processing"},
+		{IPP_JOB_STOPPED, "stopped"}
+	};
+	
 	/**
 	 * List installed printers
 	 * @return array of printers 
