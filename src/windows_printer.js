@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 const fs = require('fs');
+const os = require('os');
 
 dotenv.config({path: fs.realpathSync(__dirname + '/../.env')});
 
@@ -109,17 +110,17 @@ module.exports = class WinPrinter{
 				options[value] = defaultOptions[value];
 		});
 
-		var printPDF = edge.func({
+		var printFile = edge.func({
 			assemblyFile: dllPath,
 			typeName: 'windows_printer.API',
-			methodName: 'PrintPDF' // This must be Func<object,Task<object>>
+			methodName: 'Print' // This must be Func<object,Task<object>>
 		});
 
 		if(!filename)
 			throw "File path not specified";
 
 		return new Promise((resolve, reject) => {
-			printPDF(options, function(error, response){
+			printFile(options, function(error, response){
 				if(error)
 					reject(error);
 				else
@@ -128,4 +129,11 @@ module.exports = class WinPrinter{
 		})
 	}
 
+	printText(text = '', options = {}, printer = ''){
+		let filepath = os.tmpdir() + "/nnp_tmp.txt";
+		
+		fs.writeFileSync(filepath, text);
+
+		this.print(filepath, options, printer);
+	}
 }

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Drawing.Printing;
 using System.Printing;
 using System.Web;
@@ -162,10 +163,36 @@ namespace windows_printer
             }
 
             string mimeType = MimeMapping.GetMimeMapping(filename);
+            string[] octetStreamSupportedExtensions = { ".c++", ".cc", ".com", ".conf", ".hh", ".java", ".log" };
 
-            if (mimeType == "application/pdf")
-                return PrintPDF(filename, printerSettings, pageSettings);
+            switch (mimeType) {
+                case "application/pdf":
+                    return PrintPDF(filename, printerSettings, pageSettings, copies);
 
+                case "application/octet-stream":
+                    string extension = filename.Substring(filename.LastIndexOf("."));
+
+                    if (octetStreamSupportedExtensions.Contains(extension))
+                        return PrintText(filename, printerSettings, pageSettings, copies);
+                    else
+                        return false;
+
+                case "application/x-javascript":
+                    return PrintText(filename, printerSettings, pageSettings, copies);
+
+                case "application/rtf":
+                    //come lo faccio questo?
+                    break;
+
+                default:
+                    if (mimeType.Contains("image/"))
+                        return PrintImage(filename, printerSettings, pageSettings, copies);
+                    else if (mimeType.Contains("text/"))
+                        return PrintText(filename, printerSettings, pageSettings, copies);
+                    else
+                        return false;
+            }
+            
             return false;
         }
         #endregion
@@ -181,7 +208,7 @@ namespace windows_printer
 
             return temp.ToArray();
         }
-        private static bool PrintPDF(string filename, PrinterSettings printerSettings, PageSettings pageSettings)
+        private static bool PrintPDF(string filename, PrinterSettings printerSettings, PageSettings pageSettings, int copies)
         {
             bool landscape = pageSettings.Landscape,
                  color = pageSettings.Color;
@@ -190,22 +217,94 @@ namespace windows_printer
             {
                 using (var document = PdfDocument.Load(filename))
                 {
-                    using (PrintDocument printDocument = document.CreatePrintDocument())
+                    using (PrintDocument pd = document.CreatePrintDocument())
                     {
-                        printDocument.PrinterSettings = printerSettings;
-                        printDocument.DefaultPageSettings = pageSettings;
-                        printDocument.PrintController = new StandardPrintController();
-                        printDocument.QueryPageSettings += delegate (object sender, QueryPageSettingsEventArgs e) {
+                        pd.PrinterSettings = printerSettings;
+                        pd.DefaultPageSettings = pageSettings;
+                        pd.PrintController = new StandardPrintController();
+                        pd.QueryPageSettings += delegate (object sender, QueryPageSettingsEventArgs e) {
                             e.PageSettings.Landscape = landscape;
                             e.PageSettings.Color = color;
                         };
-                        printDocument.Print();
+                        pd.Print();
                     }
                 }
 
                 return true;
             }
             catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
+        }
+        private static bool PrintImage(string filename, PrinterSettings printerSettings, PageSettings pageSettings, int copies)
+        {
+            bool landscape = pageSettings.Landscape,
+                 color = pageSettings.Color;
+            try
+            {
+                PrintDocument pd = new PrintDocument
+                {
+                    PrinterSettings = printerSettings,
+                    DefaultPageSettings = pageSettings
+                };
+
+                pd.PrintPage += delegate (object sender, PrintPageEventArgs args)
+                {
+                    Image image = Image.FromFile(filename);
+                    args.Graphics.DrawImage(image, args.MarginBounds);
+                };
+
+                pd.QueryPageSettings += delegate (object sender, QueryPageSettingsEventArgs e) {
+                    e.PageSettings.Landscape = landscape;
+                    e.PageSettings.Color = color;
+                };
+                pd.Print();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
+        }
+        private static bool PrintText(string filename, PrinterSettings printerSettings, PageSettings pageSettings, int copies)
+        {
+            bool landscape = pageSettings.Landscape,
+                 color = pageSettings.Color;
+
+            string text = System.IO.File.ReadAllText(filename);
+
+            try
+            {
+                PrintDocument pd = new PrintDocument
+                {
+                    PrinterSettings = printerSettings,
+                    DefaultPageSettings = pageSettings
+                };
+
+                pd.PrintPage += delegate (object sender, PrintPageEventArgs args)
+                {
+                    args.Graphics.DrawString(
+                        text,
+                        new Font("Times New Roman", 12),
+                        new SolidBrush(Color.Black),
+                        args.MarginBounds
+                    );
+                };
+
+                pd.QueryPageSettings += delegate (object sender, QueryPageSettingsEventArgs e)
+                {
+                    e.PageSettings.Landscape = landscape;
+                    e.PageSettings.Color = color;
+                };
+                pd.Print();
+
+                return true;
+            }
+            catch(Exception e)
             {
                 Console.WriteLine(e);
                 return false;
