@@ -53,16 +53,22 @@ namespace API{
 			CUPSOptions->Set(UTF8_STRING(dest->options[i].name), UTF8_STRING(dest->options[i].value));
 		}
 
+		char id[5], priority[5], size[5];
+
 		for(int i = 0; i < num_jobs; i++){
 			Local<Object> job = Object::New(isolate);
 			
+			sprintf(id, "%d", printerJobs[i].id);
+			sprintf(priority, "%d", printerJobs[i].priority);
+			sprintf(size, "%d", printerJobs[i].size);
+
 			job->Set(UTF8_STRING("completed_time"), UTF8_STRING(httpGetDateString(printerJobs[i].completed_time)));
 			job->Set(UTF8_STRING("creation_time"), UTF8_STRING(httpGetDateString(printerJobs[i].creation_time)));
 			job->Set(UTF8_STRING("format"), UTF8_STRING(printerJobs[i].format));
-			job->Set(UTF8_STRING("id"), UTF8_STRING(to_string(printerJobs[i].id).c_str()));
-			job->Set(UTF8_STRING("priority"), UTF8_STRING(to_string(printerJobs[i].priority).c_str()));
+			job->Set(UTF8_STRING("id"), UTF8_STRING(id));
+			job->Set(UTF8_STRING("priority"), UTF8_STRING(priority));
 			job->Set(UTF8_STRING("processing_time"), UTF8_STRING(httpGetDateString(printerJobs[i].processing_time)));
-			job->Set(UTF8_STRING("size"), UTF8_STRING(to_string(printerJobs[i].size).c_str()));
+			job->Set(UTF8_STRING("size"), UTF8_STRING(size));
 			job->Set(UTF8_STRING("status"), UTF8_STRING(getJobStatusString(printerJobs[i].state)));
 			job->Set(UTF8_STRING("title"), UTF8_STRING(printerJobs[i].title));
 			job->Set(UTF8_STRING("user"), UTF8_STRING(printerJobs[i].user));
