@@ -1,6 +1,6 @@
 {
   "name": "node-native-printer",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-beta.1",
   "description": "Node module to print from nodejs apps",
   "main": "index.js",
   "directories": {
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"no test specified\" && exit 1",
-    "install": "node install/install.js",
+    "install": "node install/install.js && node-gyp rebuild",
     "build": "node-gyp rebuild"
   },
   "repository": {

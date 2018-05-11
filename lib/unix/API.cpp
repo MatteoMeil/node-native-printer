@@ -28,16 +28,20 @@ namespace API{
 
 		ISOLATE;
 
-		if(args.Length() < 1)
+		if(args.Length() < 1){
 			THROW_EXCEPTION("Too few arguments");
-		
+			return;
+		}
+
 		String::Utf8Value printer(args[0]->ToString());
 
 		cups_dest_t* dest = getPrinter(*printer);
 
-		if(dest == NULL)
+		if(dest == NULL){
 			THROW_EXCEPTION("Printer not found or error retrieving printer");
-		
+			return;
+		}
+
 		cups_job_t* printerJobs;
 		int num_jobs = cupsGetJobs(&printerJobs, dest->name, 0, CUPS_WHICHJOBS_ALL);
 
@@ -59,7 +63,7 @@ namespace API{
 			job->Set(UTF8_STRING("priority"), UTF8_STRING(to_string(printerJobs[i].priority).c_str()));
 			job->Set(UTF8_STRING("processing_time"), UTF8_STRING(httpGetDateString(printerJobs[i].processing_time)));
 			job->Set(UTF8_STRING("size"), UTF8_STRING(to_string(printerJobs[i].size).c_str()));
-			job->Set(UTF8_STRING("status"), UTF8_STRING((job_statuses.at(printerJobs[i].state)).c_str()));
+			job->Set(UTF8_STRING("status"), UTF8_STRING(getJobStatusString(printerJobs[i].state)));
 			job->Set(UTF8_STRING("title"), UTF8_STRING(printerJobs[i].title));
 			job->Set(UTF8_STRING("user"), UTF8_STRING(printerJobs[i].user));
 
@@ -67,8 +71,7 @@ namespace API{
 		}
 
 		cupsFreeJobs(num_jobs, printerJobs);
-		cupsFreeDests(1, dest);
-		
+		free(dest);
 		// result->Set(UTF8_STRING("infos"), infos);
 		result->Set(UTF8_STRING("jobs"), jobs);
 		result->Set(UTF8_STRING("CUPSOptions"), CUPSOptions);
@@ -79,19 +82,23 @@ namespace API{
 	CALLBACK(printerOptions){
 		ISOLATE;
 
-		if(args.Length() < 1)
+		if(args.Length() < 1){
 			THROW_EXCEPTION("Too few arguments");
+			return;
+		}
 		
 		String::Utf8Value printer(args[0]->ToString());
 
 		cups_dest_t* dest = getPrinter(*printer);
 
-		if(dest == NULL)
+		if(dest == NULL){
 			THROW_EXCEPTION("Printer not found");
+			return;
+		}
 	
 		const char* filename = cupsGetPPD(dest->name);
 		ppd_file_t* ppd = ppdOpenFile(filename);
-
+		
 		ppdMarkDefaults(ppd);
 		cupsMarkOptions(ppd, dest->num_options, dest->options);
 
@@ -125,8 +132,8 @@ namespace API{
 			group++;
 		}
 
-		cupsFreeDests(1, dest);
 		ppdClose(ppd);
+		free(dest);
 		
 		result->Set(UTF8_STRING("options"), resOptions);
 		result->Set(UTF8_STRING("defaultOptions"), resDefaults);
@@ -138,15 +145,18 @@ namespace API{
 		ISOLATE;
 		
 		cups_dest_t* printer = getPrinter(NULL);
-		args.GetReturnValue().Set(UTF8_STRING(printer->name));
+		args.GetReturnValue().Set(UTF8_STRING(strdup(printer->name)));
+		free(printer);
 	}
 
 	CALLBACK(print){
 		using namespace std;
 
 		ISOLATE;
-		if(args.Length() < 3)
+		if(args.Length() < 3){
 			THROW_EXCEPTION("Too few arguments");
+			return;
+		}
 
 		string printer(*(String::Utf8Value(args[0]->ToString())));
 		string file(*(String::Utf8Value(args[1]->ToString())));
@@ -160,5 +170,6 @@ namespace API{
 		string result = exec(cmd.c_str());
 		
 		args.GetReturnValue().Set(UTF8_STRING(result.c_str()));
+		free(dest);
 	}
 }

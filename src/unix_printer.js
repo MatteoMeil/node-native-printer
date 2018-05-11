@@ -39,8 +39,12 @@ module.exports = class UnixPrinter{
 
 	//options refer to https://www.cups.org/doc/options.html
 	print(filename = null, options = {}, printer = ''){
-		if(!printer && !this.printer)
-			console.warn("No printer specified. Will be used default printer");
+		if(!printer){ 
+			if(this.printer)
+				printer = this.printer
+			else
+				console.warn("No printer specified. Will be used default printer");
+		}
 		
 		if(!filename)
 			throw "No file specified";

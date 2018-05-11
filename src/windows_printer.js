@@ -89,6 +89,13 @@ module.exports = class WinPrinter{
 	}
 
 	print(filename = null, userOptions = {}, printer = ''){
+		if(!printer){ 
+			if(this.printer)
+				printer = this.printer
+			else
+				console.warn("No printer specified. Will be used default printer");
+		}
+
 		let defaultOptions = {
 			collate : true,
 			duplex : "Default",
@@ -97,7 +104,7 @@ module.exports = class WinPrinter{
 			color : true,
 			landscape : false,
 			paperSize : '',
-			printerName: printer || this.printer,
+			printerName: printer,
 			copies: 1,
 			filePath: filename
 		}

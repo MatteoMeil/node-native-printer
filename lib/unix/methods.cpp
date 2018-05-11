@@ -13,8 +13,9 @@ namespace methods{
 		if(printer != NULL){
 			string printerName = strtolower(string(printer)); 
 			
-			if(strlen(printer) > 0 && printerName.compare("null") != 0 && printerName.compare("undefined") != 0)
-				temp = cupsGetDest(printer, NULL, num_dests, dests);	
+			if(strlen(printer) > 0 && printerName.compare("null") != 0 && printerName.compare("undefined") != 0){
+				temp = cupsGetDest(printer, NULL, num_dests, dests);
+			}
 			else
 				temp = cupsGetDest(cupsGetDefault(), NULL, num_dests, dests);
 		}
@@ -22,13 +23,17 @@ namespace methods{
 			temp = cupsGetDest(cupsGetDefault(), NULL, num_dests, dests);			
 
 		cups_dest_t* result = new cups_dest_t;
-
-		if(! copyDest(temp, result))
-			return NULL;
+		if(temp != NULL){
+			if(! copyDest(temp, result))
+				return NULL;
+		}
+		else{
+			free(result);
+			result = NULL;
+		}
 
 		cupsFreeDests(num_dests, dests);
 		dests = temp = NULL;
-
 		return result;
 	}
 
@@ -75,6 +80,34 @@ namespace methods{
 		return true;
 	}
 
+	const char* getJobStatusString(int status){
+		switch(status){
+			case IPP_JOB_ABORTED:
+				return "aborted";
+
+			case IPP_JOB_CANCELED:
+				return "canceled";
+
+			case IPP_JOB_COMPLETED:
+				return "completed";
+
+			case IPP_JOB_HELD:
+				return "held";
+
+			case IPP_JOB_PENDING:
+				return "pending";
+
+			case IPP_JOB_PROCESSING:
+				return "processing";
+
+			case IPP_JOB_STOPPED:
+				return "stopped";
+
+			default:
+				return "UNDEFINED";
+		}
+	}
+
 	string exec(const char* cmd) {
 		char buffer[128];
 		std::string result = "";
@@ -108,4 +141,5 @@ namespace methods{
 		transform(data.begin(), data.end(), data.begin(), ::tolower);
 		return data.c_str();
 	}
+
 }

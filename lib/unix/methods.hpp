@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <iostream>
 #include <string>
-#include <unordered_map>
 #include <cstring>
 #include <stdexcept>
 #include <stdio.h>
@@ -39,7 +38,14 @@ namespace methods{
 	bool copyOptions(cups_option_t*, int, cups_option_t*);
 
 	/**
-	 * Alias of system() that return output string
+	 * Return job status from job status string
+	 * @param status IPP_JOB status constant
+	 * @return status string
+	 */
+	const char* getJobStatusString(int);
+
+	/**
+	 * It has the same behaviour of system() but returns command's output string
 	 * @pararm cmd command to execute
 	 * @return output string
 	 */
