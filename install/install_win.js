@@ -1,7 +1,6 @@
 const fs = require('fs');
 
 module.exports = function(){
-
 	
 	if(fs.existsSync(__dirname + "/../../electron-edge")){
 		console.log("Found electron-edge!\n");

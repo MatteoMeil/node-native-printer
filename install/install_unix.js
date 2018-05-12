@@ -1,4 +1,5 @@
 const { spawnSync } = require('child_process');
+const { spawn } = require('child_process');
 
 module.exports = function(){
 	var cmd, 
@@ -25,5 +26,12 @@ module.exports = function(){
 
 	}
 
-	process.exit(0);
+	cmd = spawnSync('npm', ['run', 'build']);
+	
+	if(output = cmd.stderr.toString('utf-8')){
+		console.log(output);
+		process.exit(1);
+	}
+
+	console.log(cmd.stdout.toString('utf-8'));
 }
