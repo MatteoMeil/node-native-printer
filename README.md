@@ -11,7 +11,7 @@ A node module to natively print your files
 * ### Unix (Mac and Linux)
 
    * **[node-gyp](https://github.com/nodejs/node-gyp)** to build native modules
-   * **[cups](https://www.cups.org/)** - for Linux it needs libcups2-dev and libcups2; for Mac it needs cups-devel. Both packages contains source code needed to build native modules. **It may also need this lib in production**. See [API](#api)
+   * **[cups](https://www.cups.org/)** (Linux only). You need libcups2-dev and libcups2. The first contains source code needed to build native modules, the second contains command-line executables needed in order to print. **It may also need libcups2 in production**. See [API](#api)
 
 ## Imporant notes
 
