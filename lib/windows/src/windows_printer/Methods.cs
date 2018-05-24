@@ -82,23 +82,20 @@ namespace windows_printer
             PrintCapabilities pc = new PrintServer()
                                     .GetPrintQueue(printerName)
                                     .GetPrintCapabilities();
+            
+            string[] paperSheets = new string[ps.PaperSizes.Count];
 
-            List<string> temp = new List<string>();
-
-            foreach (PaperSize paperSize in ps.PaperSizes)
+            for (int i = 0; i < ps.PaperSizes.Count; i++)
             {
-                temp.Add(paperSize.PaperName);
+                paperSheets[i] = ps.PaperSizes[i].PaperName;
             }
 
-            string[] paperSheets = temp.ToArray();
-            temp.Clear();
+            string[] resolutions = new string[ps.PrinterResolutions.Count];
 
-            foreach (PrinterResolution resolution in ps.PrinterResolutions)
+            for (int i = 0; i < ps.PrinterResolutions.Count; i++)
             {
-                temp.Add(resolution.Kind.ToString());
+                resolutions[i] = ps.PrinterResolutions[i].Kind.ToString();
             }
-
-            string[] resolutions = temp.ToArray();
 
             return new PrinterOptions
             {
@@ -179,10 +176,6 @@ namespace windows_printer
 
                 case "application/x-javascript":
                     return PrintText(filename, printerSettings, pageSettings, copies);
-
-                case "application/rtf":
-                    //come lo faccio questo?
-                    break;
 
                 default:
                     if (mimeType.Contains("image/"))

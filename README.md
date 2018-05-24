@@ -15,7 +15,7 @@ A node module to natively print your files
 
 ## Imporant notes
 
-Due to important differences in enviroments and ecosystems between Microsoft and Unix-based systems, this module has been written in C++ for Unix and C# for Windows. This can result in different behaviours during the execution of the methods (as different execution time).
+Due to important differences in enviroments and ecosystems between Microsoft and Unix-based systems, this module has been written in C++ for Unix and C# for Windows. This can result in different behaviours during the execution of the methods (such as different execution time, returning values, allowed options for printer, etc.).
 
 ***
 ## Installation
@@ -75,7 +75,7 @@ Then you can set a printer to work on, calling `setPrinter(printerName)`. In thi
       * **Unix**: return an object containing printer-specific options and from PPD file.
 
 ### `print(filename[, options, printer])`
-   * **filename**: file to print (**N.B.**: windows supports only PDF)
+   * **filename**: file to print
    * **options**: a JSON object containing options for printer:
       * **Windows**: default options:
          ```json
@@ -93,7 +93,7 @@ Then you can set a printer to work on, calling `setPrinter(printerName)`. In thi
 
          List of supported extensions can be found [here](https://github.com/MatteoMeil/node-native-printer/blob/master/supported-extensions.md)
 
-         **Notes:** duplex is case sensitive, so be careful to write correctly. `"paperSize"` refers to size of sheet to print on; if you want to print on a paper with custom dimensions, pass `"Custom.WidthxHeight"` where Width and Height are dimensions in hundredths of an inch. `"fromPage": 0` means document will be printed from first page; `"toPage": 0` means document will be printed from `"fromPage"` to last page.
+         **Notes:** duplex is case sensitive, so be careful to write correctly. `"paperSize"` refers to size of sheet to print on; if you want to print on a paper with custom dimensions, pass `"Custom.WidthxHeight"` where Width and Height are **integer** dimensions in hundredths of inch. `"fromPage": 0` means document will be printed from first page; `"toPage": 0` means document will be printed from `"fromPage"` to last page.
 
       * **Unix**: you can use [command-line options](https://www.cups.org/doc/options.html) in JSON-style and/or printer-specific options retrieved from `printerOptions()`; i.e.:
 

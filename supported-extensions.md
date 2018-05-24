@@ -24,7 +24,6 @@ Here's a list of file extensions you can print from this module.
 * .log
 * .pdf
 * .png
-* .rtf
 * .tif
 * .tiff
 * .txt
