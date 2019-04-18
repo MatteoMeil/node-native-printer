@@ -4,7 +4,7 @@ const os = require('os');
 
 dotenv.config({path: fs.realpathSync(__dirname + '/../.env')});
 
-const edge = require(`../../${process.env.ELECTRON == 'true' ? 'electron-' : ''}edge`);
+const edge = require(`../../${process.env.PACKAGE}`);
 const dllPath = fs.realpathSync(__dirname + '/../lib/windows/windows_printer.dll');
 
 module.exports = class WinPrinter{

@@ -6,7 +6,8 @@ A node module to natively print your files
 
 * ### Windows:
 
-   * **[edge](https://github.com/tjanczuk/edge)** or [electron-edge](https://github.com/kexplo/electron-edge) (depending on your environment). Both of them need to be **installed before** this module. During installation it will be detected which one is installed
+   * **[edge](https://github.com/tjanczuk/edge)**, [electron-edge](https://github.com/kexplo/electron-edge) (depending on your environment) or any other forks of electorn-edge. Both of them need to be **installed before** this module. During installation it will be prompted to select which package do
+      you want to use.<br>**BE CAREFULLY**: it will be listed all package in `node_modules` containing the word "edge"; be sure to make the right choice
 
 * ### Unix (Mac and Linux)
 

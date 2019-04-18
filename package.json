@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/MatteoMeil/node-native-print#readme",
   "dependencies": {
-    "dotenv": "^5.0.1"
+    "dotenv": "^5.0.1",
+    "inquirer": "^6.3.1"
   }
 }
