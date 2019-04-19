@@ -12,6 +12,10 @@ module.exports = class WinPrinter{
 		this.printer = '';
 	}
 
+	/**
+	 * Get a list of installed printers
+	 * @returns {Promise<string[]>}
+	 */
 	listPrinters(){
 		var list = edge.func({
 			assemblyFile: dllPath,
@@ -29,6 +33,10 @@ module.exports = class WinPrinter{
 		})
 	}
 
+	/**
+	 * Get the name of default printer
+	 * @returns {Promise<string>}
+	 */
 	defaultPrinterName() {
 		var defaultName = edge.func({
 			assemblyFile: dllPath,
@@ -46,14 +54,28 @@ module.exports = class WinPrinter{
 		});
 	}
 
+	/**
+	 * Set the name of the printer to use in this module
+	 * @param {string} printer
+	 */
 	setPrinter(printer){
 		this.printer = printer;
 	}
 
+	/**
+	 * Get the name of current printer set with `setPrinter()`
+	 * @returns {string}
+	 */
 	getCurrentPrinter(){
 		return this.printer;
 	}
 
+	/**
+	 * Get all jobs active of supplied printer or, if not supplied, of printer set with `setPrinter()`.
+     * If no printer is set or supplied, it will be take the default printer.
+	 * @param {string?} printer
+	 * @returns {Promise<any[]>}
+	 */
 	printerInfo(printer = ''){
 		var infos = edge.func({
 			assemblyFile: dllPath,
@@ -70,7 +92,20 @@ module.exports = class WinPrinter{
 			})
 		});
 	}
-	
+
+    /**
+     * Get options of supplied printer of, if not supplied, of printer set with `setPrinter()`.
+     * If no printer is set or supplied, it will be take the default printer.
+     * @param {string?} printer
+     * @returns {Promise<{
+     *     Collate?: string[],
+     *     Duplexing?: string[],
+     *     MaxCopy?: number,
+     *     SupportsColor?: boolean,
+     *     PaperSheets?: string[],
+     *     Resolutions?: string[]
+     * }>}
+     */
 	printerOptions(printer = ''){
 		var getOptions = edge.func({
 			assemblyFile: dllPath,
@@ -88,6 +123,22 @@ module.exports = class WinPrinter{
 		});
 	}
 
+    /**
+     * Print a file.
+     * @param {string} filename
+     * @param {{
+     *     collate?: boolean,
+     *     duplex?: string,
+     *     fromPage?: number,
+     *     toPage?: number
+     *     color?: boolean,
+     *     landscape?: boolean,
+     *     paperSize?: string,
+     *     copies?: number
+     * }} userOptions
+     * @param {string?} printer
+     * @returns {Promise<boolean>}
+     */
 	print(filename = null, userOptions = {}, printer = ''){
 		if(!printer){ 
 			if(this.printer)
@@ -136,6 +187,21 @@ module.exports = class WinPrinter{
 		})
 	}
 
+    /**
+     * Print a string directly.
+     * @param {string} text
+     * @param {{
+     *     collate?: boolean,
+     *     duplex?: string,
+     *     fromPage?: number,
+     *     toPage?: number
+     *     color?: boolean,
+     *     landscape?: boolean,
+     *     paperSize?: string,
+     *     copies?: number
+     * }} options
+     * @param {string?} printer
+     */
 	printText(text = '', options = {}, printer = ''){
 		let filepath = os.tmpdir() + "/nnp_tmp.txt";
 		
