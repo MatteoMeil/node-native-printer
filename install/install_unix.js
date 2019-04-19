@@ -34,4 +34,4 @@ module.exports = function(){
 	}
 
 	console.log(cmd.stdout.toString('utf-8'));
-}
+};
