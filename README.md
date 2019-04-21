@@ -6,8 +6,10 @@ A node module to natively print your files
 
 * ### Windows:
 
-   * **[edge](https://github.com/tjanczuk/edge)**, [electron-edge](https://github.com/kexplo/electron-edge) (depending on your environment) or any other forks of electorn-edge. Both of them need to be **installed before** this module. During installation it will be prompted to select which package do
-      you want to use.<br>**BE CAREFULLY**: it will be listed all package in `node_modules` containing the word "edge"; be sure to make the right choice
+   * **[edge](https://github.com/tjanczuk/edge)**, [electron-edge](https://github.com/kexplo/electron-edge) (depending on your environment) or any other fork of these. The package you choose **should be installed before** node-native-printer. During installation you'll be prompted to select which package do
+      you want to use.<br>**BE CAREFULLY**: it will be listed all packages in `node_modules` containing the word "edge"; be sure to make the right choice
+      
+      If you wish, you can manually specify which fork of edge or electron-edge to use. See [installation](#installation)
 
 * ### Unix (Mac and Linux)
 
@@ -23,6 +25,12 @@ Due to important differences in enviroments and ecosystems between Microsoft and
 ```
 npm install node-native-printer --save
 ```
+
+You will be prompted for selecting edge backend based on installed packages that contains the word "edge". If you wish to enter manually the name of edge backend package, select `Not listed` and type it manually.
+
+#### Flags (Windows only)
+   * `-p` or `--production`: to be used when packaging with (i.e.) electron-builder. It will skip prompting for edge backend and will take correctly the dll path needed for windows.<br>
+      **Note** that `-p` flag require that edge backend has been specified during installation.
 
 ## Usage
 First of all you need to require the module inside your app this way:
@@ -114,3 +122,34 @@ Then you can set a printer to work on, calling `setPrinter(printerName)`. In thi
 ### `printText(text[, options, printer])`
 
 Same as `print()` but you can pass directly a string of text on the first parameter.
+
+## Electron Packaging (Windows only)
+As from [electron's docs](https://electronjs.org/docs), there are two methods of packaging your app: with one of the [builders](https://electronjs.org/docs/tutorial/application-distribution) or manually making your own an [asar](https://github.com/electron/asar) archive.
+
+   * **Builders** (tested with [electron-builder](https://github.com/electron-userland/electron-builder)): it's enough to add flag `-p` or `--production`.<br>
+      **Example** with electron-builder:
+      ```
+      "build": {
+        "npmArgs": "--production"
+      }
+      ```
+   * **Manually packing**: you'll need to copy all `lib/windows` folder, under `<app-root>/resources/app.asar.unpacked/node_modules/node-native-printer/lib/windows`.<br>
+      The tree will look like:
+      ```
+      /app folder
+      +-- ...
+      +-- resources/
+          +-- app.asar
+          +-- electron.asar
+          +-- app.asar.unpacked/
+              +-- node_modules/
+                  +-- node-native-printer/
+                      +-- lib/
+                          +-- windows/
+                              +-- nl/
+                              +-- x64/
+                              +-- x86/
+                              +-- PdfiumViewer.dll
+                              +-- PdfiumViewer.xml
+                              +-- windows_printer.dll
+      ```
