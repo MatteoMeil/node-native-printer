@@ -246,7 +246,19 @@ namespace windows_printer
                 pd.PrintPage += delegate (object sender, PrintPageEventArgs args)
                 {
                     Image image = Image.FromFile(filename);
-                    args.Graphics.DrawImage(image, args.MarginBounds);
+                    if (landscape)
+                    {
+                        // in landscape mode width is actually height and vice-versa
+                        var width = args.PageSettings.PrintableArea.Width;
+                        var height = args.PageSettings.PrintableArea.Height;
+                        args.Graphics.DrawImage(image, 0, 0, height, width);
+                    }
+                    else
+                    {
+                        var width = args.PageSettings.PrintableArea.Width;
+                        var height = args.PageSettings.PrintableArea.Height;
+                        args.Graphics.DrawImage(image, 0, 0, width, height);
+                    }
                 };
 
                 pd.QueryPageSettings += delegate (object sender, QueryPageSettingsEventArgs e) {
