@@ -40,7 +40,7 @@ namespace windows_printer
         public static String[] ListPrinters()
         {
             PrinterSettings.StringCollection printers = System.Drawing.Printing.PrinterSettings.InstalledPrinters;
-            
+
             String[] result = new String[printers.Count];
 
             int i = 0;
@@ -56,15 +56,14 @@ namespace windows_printer
             PrinterSettings defaultPrinter = new PrinterSettings();
             return defaultPrinter.PrinterName;
         }
-        public static PrintSystemJobInfo[] PrinterInfo(String printer)
+        public static PrintSystemJobInfo[] PrinterInfo(String printerName)
         {
-            PrinterSettings printerSettings = new PrinterSettings { PrinterName = printer };
+            PrinterSettings printerSettings = new PrinterSettings { PrinterName = printerName };
 
             if (!printerSettings.IsValid)
-                printer = (new PrinterSettings()).PrinterName; //fallback to default printer
+                printerName = (new PrinterSettings()).PrinterName; //fallback to default printer
 
-            PrintJobInfoCollection jobs = (new PrintServer())
-                                          .GetPrintQueue(printer)
+            PrintJobInfoCollection jobs = Methods.GetPrintQueue(printerName)
                                           .GetPrintJobInfoCollection();
 
             return jobs.ToArray();
@@ -79,10 +78,9 @@ namespace windows_printer
                 printerName = ps.PrinterName;
             }
 
-            PrintCapabilities pc = new PrintServer()
-                                    .GetPrintQueue(printerName)
-                                    .GetPrintCapabilities();
-            
+            PrintCapabilities pc = Methods.GetPrintQueue(printerName)
+                                   .GetPrintCapabilities();
+
             string[] paperSheets = new string[ps.PaperSizes.Count];
 
             for (int i = 0; i < ps.PaperSizes.Count; i++)
@@ -112,7 +110,9 @@ namespace windows_printer
             PrinterSettings printerSettings = new PrinterSettings { PrinterName = printer };
 
             if (!printerSettings.IsValid)
+            {
                 printerSettings = new PrinterSettings(); //fallback to default printer
+            }
 
             printerSettings.Copies = copies;
             printerSettings.Collate = settings.Collate;
@@ -126,6 +126,7 @@ namespace windows_printer
 
             if (settings.ToPage > 0)
                 printerSettings.ToPage = settings.ToPage;
+
 
             PageSettings pageSettings = new PageSettings(printerSettings)
             {
@@ -162,7 +163,8 @@ namespace windows_printer
             string mimeType = MimeMapping.GetMimeMapping(filename);
             string[] octetStreamSupportedExtensions = { ".c++", ".cc", ".com", ".conf", ".hh", ".java", ".log" };
 
-            switch (mimeType) {
+            switch (mimeType)
+            {
                 case "application/pdf":
                     return PrintPDF(filename, printerSettings, pageSettings, copies);
 
@@ -185,7 +187,7 @@ namespace windows_printer
                     else
                         return false;
             }
-            
+
             return false;
         }
         #endregion
@@ -201,6 +203,23 @@ namespace windows_printer
 
             return temp.ToArray();
         }
+
+        private static PrintQueue GetPrintQueue(String printerName)
+        {
+            if (printerName.Substring(0, 2) == @"\\")
+            {
+                int index = printerName.IndexOf('\\', 2);
+                if (index > 0)
+                {
+                    String host = printerName.Substring(0, index);
+                    String printer = printerName.Substring(index + 1);
+                    return (new PrintServer(host)).GetPrintQueue(printer);
+                }
+            }
+
+            return (new PrintServer()).GetPrintQueue(printerName);
+        }
+
         private static bool PrintPDF(string filename, PrinterSettings printerSettings, PageSettings pageSettings, int copies)
         {
             bool landscape = pageSettings.Landscape,
@@ -309,7 +328,7 @@ namespace windows_printer
 
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e);
                 return false;
