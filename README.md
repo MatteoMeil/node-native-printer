@@ -34,7 +34,6 @@ You will be prompted for selecting edge backend based on installed packages that
 
    * `-nnp:<package-name>`: specify the edge package to use. Skips the selection process on install if a valid package is specified.
 
-
 ## Usage
 First of all you need to require the module inside your app this way:
 ```javascript
