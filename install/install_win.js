@@ -21,6 +21,17 @@ module.exports = function(){
 		}
 	}
 
+	let packageSelection;
+	var nnpFilter = new RegExp('^-nnp:.*$', 'g');
+	let nnpFlag = flags.filter(function(value) {
+		return nnpFilter.test(value);
+	});
+
+	if (nnpFlag.length > 0) {
+		packageSelection = nnpFlag[0].split(':')[1];
+	}
+
+
 	var pattern = new RegExp(".*edge.*", "gi");
 	var choices;
 
@@ -32,6 +43,13 @@ module.exports = function(){
 		choices = choices.filter(value => {
 			return pattern.test(value);
 		});
+
+		if (packageSelection) {
+			let index =  choices.indexOf(packageSelection);
+			if (index >= 0) {
+				return makeEnv(choices[index]);
+			}
+		}
 
 		choices.push('Not listed');
 
