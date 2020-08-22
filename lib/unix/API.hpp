@@ -6,8 +6,9 @@ using namespace v8;
 
 #define CALLBACK(name) 			void name(const FunctionCallbackInfo<Value>& args)
 #define ISOLATE 				v8::Isolate* isolate = v8::Isolate::GetCurrent()
-#define THROW_EXCEPTION(msg) 	isolate->ThrowException(v8::Exception::TypeError(String::NewFromUtf8(isolate, msg)))
-#define UTF8_STRING(str) 		String::NewFromUtf8(isolate, str)
+#define THROW_EXCEPTION(msg) 	isolate->ThrowException(v8::Exception::TypeError(String::NewFromUtf8(isolate, msg).FromMaybe(v8::Local<v8::String>())))
+#define UTF8_STRING(str) 		String::NewFromUtf8(isolate, str).FromMaybe(v8::Local<v8::String>())
+#define S_STR(str) isolate, str->ToString(isolate->GetCurrentContext()).FromMaybe(v8::Local<v8::String>())
 
 
 //Method declarations
