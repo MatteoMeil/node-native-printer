@@ -29,8 +29,8 @@ npm install node-native-printer --save
 You will be prompted for selecting edge backend based on installed packages that contains the word "edge". If you wish to enter manually the name of edge backend package, select `Not listed` and type it manually.
 
 #### Flags (Windows only)
-   * `-p` or `--production`: to be used when packaging with (i.e.) electron-builder. It will skip prompting for edge backend and will take correctly the dll path needed for windows.<br>
-      **Note** that `-p` flag require that edge backend has been specified during installation.
+   * `--production` or `NODE_ENV=production`: to be used when packaging with (i.e.) electron-builder. It will skip prompting for edge backend and will take correctly the dll path needed for windows.<br>
+      **Note** that `--production` flag require that edge backend has been specified during installation.
 
 ## Usage
 First of all you need to require the module inside your app this way:
